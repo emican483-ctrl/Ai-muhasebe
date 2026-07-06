@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="w-full max-w-6xl mx-auto px-2 sm:px-4 py-6">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-center bg-slate-800/40 border border-slate-700/50 p-4 rounded-2xl gap-4 mb-6 backdrop-blur-sm">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-500/10 border border-blue-500/30 rounded-xl flex items-center justify-center text-blue-400 font-bold">M</div>
+            <div>
+                <h1 class="text-lg font-bold text-slate-100">AI Muhasebe Paneli</h1>
+                <p class="text-xs text-slate-400">Hoş geldiniz, <span class="text-blue-400 font-medium">{{ session['username'] }}</span></p>
+            </div>
+        </div>
+        <div class="flex gap-2 w-full sm:w-auto">
+            <a href="/auth/logout" class="text-center w-full sm:w-auto bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 hover:text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer">Güvenli Çıkış</a>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="bg-blue-500/20 border border-blue-500 text-blue-200 px-4 py-3 rounded-xl shadow-md text-center text-sm mb-6">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Sol Kolon: İşlemler -->
+        <div class="space-y-6">
+            <!-- Dosya Yükleme -->
+            <div class="bg-slate-800/40 border border-slate-700/50 p-6 rounded-2xl backdrop-blur-sm">
+                <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Yeni Belge Yükle</h3>
+                <form action="{{ url_for('dashboard.index') }}" method="post" enctype="multipart/form-data">
+                    <div class="border-2 border-dashed border-slate-700 hover:border-blue-500/50 rounded-2xl p-6 text-center cursor-pointer transition-colors bg-slate-900/50 group">
+                        <input type="file" name="file" id="file_input" class="hidden" accept=".pdf,.png,.jpg,.jpeg" onchange="this.form.submit()">
+                        <label for="file_input" class="cursor-pointer block space-y-2">
+                            <div class="text-3xl text-slate-500 group-hover:text-blue-400 transition-colors">📄</div>
+                            <p class="text-sm text-slate-300 font-medium">Dosya Seçin</p>
+                            <p class="text-xs text-slate-500">PDF, JPG, JPEG veya PNG (Maks. 16MB)</p>
+                        </label>
+                    </div>
+                </form>
+            </div>
+
+            <!-- API Ayarı -->
+            <div class="bg-slate-800/40 border border-slate-700/50 p-6 rounded-2xl backdrop-blur-sm">
+                <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-2">Gemini API Ayarı</h3>
+                <p class="text-xs text-slate-500 mb-4">Faturaların okunabilmesi için geçerli bir API anahtarı girin.</p>
+                <form action="{{ url_for('dashboard.index') }}" method="post" class="space-y-3">
+                    <input type="password" name="api_key" placeholder="AIzaSy..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-blue-500 text-slate-100">
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold py-2.5 rounded-xl transition-all cursor-pointer">Kaydet</button>
+                </form>
+                {% if api_key_exists %}
+                    <div class="text-[11px] text-emerald-400 mt-2 flex items-center gap-1">✓ API Anahtarınız Tanımlı.</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sağ Kolon: Son İşlemler -->
+        <div class="lg:col-span-2 bg-slate-800/40 border border-slate-700/50 p-6 rounded-2xl backdrop-blur-sm">
+            <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">Son İşlemler</h3>
+            {% if not documents %}
+                <div class="text-center py-12 text-slate-500 text-sm">Henüz yüklenmiş bir belge yok.</div>
+            {% else %}
+                <div class="space-y-4">
+                    {% for doc in documents %}
+                        <div class="bg-slate-900/40 border border-slate-800 p-4 rounded-xl space-y-2">
+                            <div class="flex justify-between items-center gap-2">
+                                <span class="text-sm font-medium text-slate-200 truncate flex-1">{{ doc['file_name'] }}</span>
+                                <div class="flex items-center gap-2">
+                                    {% if doc['status'] == 'Tamamlandı' %}
+                                        <a href="{{ url_for('dashboard.download_excel', doc_id=doc['id']) }}" class="text-[11px] bg-emerald-600/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded hover:bg-emerald-600/20">Excel İndir</a>
+                                        <span class="text-[11px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">Tamamlandı</span>
+                                    {% elif doc['status'] == 'API Eksik' %}
+                                        <span class="text-[11px] px-2 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/20">API Eksik</span>
+                                    {% else %}
+                                        <span class="text-[11px] px-2 py-0.5 rounded bg-slate-500/10 text-slate-400 border border-slate-500/20">{{ doc['status'] }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if doc['formatted_result'] %}
+                                <div class="bg-slate-950/80 p-3 rounded-lg text-xs font-mono text-slate-300 overflow-x-auto whitespace-pre-wrap border border-slate-800/60">{{ doc['formatted_result'] }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="bg-slate-800/50 border border-slate-700/50 p-8 rounded-2xl shadow-xl max-w-md w-full backdrop-blur-sm">
+    <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold text-blue-400">AI Muhasebe</h2>
+        <p class="text-sm text-slate-400 mt-1">Sisteme Giriş Yapın</p>
+    </div>
+    <form method="post" class="space-y-4">
+        <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Kullanıcı Adı</label>
+            <input type="text" name="username" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 text-slate-100">
+        </div>
+        <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">Şifre</label>
+            <input type="password" name="password" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 text-slate-100">
+        </div>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 rounded-xl text-sm mt-2 cursor-pointer">Giriş Yap</button>
+    </form>
+    <div class="text-center mt-6 text-sm text-slate-400">Hesabınız yok mu? <a href="{{ url_for('auth.register') }}" class="text-blue-400 hover:underline">Yeni Hesap Açın</a></div>
+</div>
+{% endblock %}
