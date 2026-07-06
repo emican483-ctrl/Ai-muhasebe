@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h2 class="text-white">Fiyatlandırma Paketleri</h2>
+        <p class="text-muted">İhtiyacınıza en uygun planı seçerek hemen profesyonel analize başlayın.</p>
+    </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-4 mb-4">
+            <div class="card bg-dark text-white text-center p-4 border-secondary">
+                <div class="card-body">
+                    <h4 class="card-title text-info">Başlangıç Planı</h4>
+                    <h2 class="my-4">7$ <small class="text-muted">/ aylık</small></h2>
+                    <ul class="list-unstyled text-start my-4">
+                        <li>✅ Aylık 100 Fiş Analizi</li>
+                        <li>✅ Hızlı Excel Çıktısı</li>
+                        <li>✅ Standart Destek</li>
+                    </ul>
+                    <a href="{{ url_for('pricing.checkout', package_id=1) }}" class="btn btn-outline-info w-100 py-2">Satın Al</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card bg-dark text-white text-center p-4 border-info" style="box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);">
+                <div class="card-body">
+                    <h4 class="card-title text-warning">Premium Plus</h4>
+                    <h2 class="my-4">15$ <small class="text-muted">/ aylık</small></h2>
+                    <ul class="list-unstyled text-start my-4">
+                        <li>✅ Sınırsız Fiş Analizi (Adil Kullanım)</li>
+                        <li>✅ Gelişmiş Yapay Zeka Raporları</li>
+                        <li>✅ 7/24 Öncelikli Destek</li>
+                    </ul>
+                    <a href="{{ url_for('pricing.checkout', package_id=2) }}" class="btn btn-warning w-100 py-2 fw-bold">Hemen Yükselt</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
