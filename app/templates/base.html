@@ -1,29 +1,34 @@
 <!DOCTYPE html>
-<html lang="tr" class="dark">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Muhasebe Sistemi</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <style>body { background-color: #0f172a; color: #f1f5f9; }</style>
+    <title>AI Muhasebe</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>body { background-color: #0b0e14; color: white; }</style>
 </head>
-<body class="min-h-screen flex flex-col justify-between font-sans">
-    <div class="max-w-md mx-auto w-full px-4 mt-4 absolute top-0 left-1/2 -translate-x-1/2 z-50">
-        {% with messages = get_flashed_messages() %}
+<body>
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/">AI Muhasebe</a>
+            <div>
+                {% if not session.get('user_id') %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-sm">Giriş Yap</a>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">Kayıt Ol</a>
+                {% else %}
+                    <a href="{{ url_for('auth.logout') }}" class="btn btn-danger btn-sm">Güvenli Çıkış</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                {% for message in messages %}
-                    <div class="bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-lg shadow-lg text-center text-sm backdrop-blur-md mb-2">
-                        {{ message }}
-                    </div>
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
-    </div>
-    <main class="flex-grow flex items-center justify-center p-4">
         {% block content %}{% endblock %}
-    </main>
-    <footer class="text-center py-4 text-xs text-slate-500 border-t border-slate-800/50">
-        &copy; 2026 AI Muhasebe Web Uygulaması. Tüm Hakları Saklıdır.
-    </footer>
+    </div>
 </body>
 </html>
